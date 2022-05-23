@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=0,viewport-fit=cover">
+  <title>My LIFF 888</title>
+	<!-- CSS only -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+</head>
+<body>
+	
+<div class="mb-3">
+  <label for="exampleFormControlTextarea1" class="form-label">JSON - </label>
+	<a href="https://developers.line.biz/flex-simulator"  target="_blank" class="link-info">FLEX MESSAGE SIMULATOR</a>
+	<textarea class="form-control" id="flexjson" name="flexjson" rows="20" onchange="myFunction()">{
+          "type": "bubble",
+          "body": {
+            "type": "box",
+            "layout": "vertical",
+            "contents": [
+              {
+                "type": "text",
+                "text": "hello"
+              }
+            ]
+          }
+        }</textarea>	
+</div>
+  
+	</br>
+	<center><button type="button" class="btn btn-success" onclick="sendShare()">Share Target Picker</button></center>
+	
+	<div class="modal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title"> Message sent! </h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>Modal body text goes here.</p>
+      </div>
+    </div>
+  </div>
+</div>
+	
+	
+  <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+  <script>
+    
+function myFunction() {
+  var x = document.getElementById("flexjson").value;
+  try {
+    x = JSON.parse(x)
+    console.log(x)
+    var flexdat = {}
+    flexdat["type"] = "flex";
+    flexdat["altText"] = "Flex Message";
+    flexdat["contents"] = x;
+    return flexdat
+  }
+  catch(err){
+    console.log(err)
+    return "failed"
+  }
+}
+
+    
+    async function sendShare() {
+if(myFunction() !== "failed"){
+	      const result = await liff.shareTargetPicker([myFunction()])
+      if (result) {
+        alert(`[${result.status}] Message sent!`)
+
+document.querySelector(".modal").style.display = "block";
+
+document.querySelector(".modal").classList.add("show");
+
+        liff.closeWindow();
+      } else {
+        const [majorVer, minorVer, patchVer] = (liff.getLineVersion() || "").split('.');
+
+        if (minorVer === undefined) {
+          alert('ShareTargetPicker was canceled in external browser')
+          return
+        }
+
+        if (parseInt(majorVer) >= 10 && parseInt(minorVer) >= 10 && parseInt(patchVer) > 0) {
+          alert('ShareTargetPicker was canceled in LINE app')
+        }
+      }
+}else{
+	alert("JSON Incorrect.")
+}
+    }
+    function logOut() {
+      liff.logout()
+      window.location.reload()
+    }
+
+
+
+    async function main() {
+      await liff.init({ liffId: "1657153705-YZ1elgn4" })
+      if (liff.isLoggedIn()) {
+       
+      /*  if (!liff.isInClient()) {
+          logOut()
+        }*/
+      } else {
+        liff.login()
+      }
+    }
+    main()
+  </script>
+	<!-- JavaScript Bundle with Popper -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
+</body>
+</html>
